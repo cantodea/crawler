@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>亚马逊产品搜索</title>
+</head>
+<body>
+    <h1>亚马逊产品搜索</h1>
+
+    <!-- 统一的搜索表单 -->
+    <form method="post">
+        <label for="region">选择亚马逊地区：</label>
+        <select name="region" id="region-select">
+            <option value="co.uk">英国</option>
+            <option value="fr">法国</option>
+            <option value="de">德国</option>
+            <option value="es">西班牙</option>
+            <option value="it">意大利</option>
+        </select>
+        <br>
+        <input type="text" name="keyword" placeholder="输入关键词">
+        <input type="text" name="asin" placeholder="输入 ASIN">
+        <input type="submit" value="搜索">
+        
+        <!-- Best Sellers 目录爬取选项 -->
+        <h2>爬取亚马逊 Best Sellers 目录</h2>
+        <button formaction="/bestsellers" type="submit">爬取 Best Sellers 目录</button>
+    </form>
+
+</body>
+</html>
+

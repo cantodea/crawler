@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ASIN 搜索结果</title>
+    <style>
+        .button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+        .button:hover {
+            background-color: #45a049;
+        }
+        img.product-image {
+            max-width: 200px;  /* 主图最大宽度 */
+            max-height: 200px; /* 主图最大高度 */
+        }
+        .chart-container img {
+            width: 100%;  /* 走势图的宽度为容器的100% */
+            max-width: 800px; /* 走势图的最大宽度 */
+            height: auto; /* 高度自动调整以保持比例 */
+        }
+        .chart-container {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>ASIN 搜索结果</h1>
+    {% for product in products %}
+        <div>
+            <h2>{{ product.title }}</h2>
+            <p>价格: {{ product.price }}</p>
+            <p>评分: {{ product.rating }}</p>
+            <p>品牌: {{ product.brand }}</p>
+            <p>描述: {{ product.description }}</p>
+            <p>库存: {{ product.max_stock }}</p>
+            {% if product.main_image %}
+                <p><img src="{{ product.main_image }}" alt="主图" class="product-image"></p>
+            {% endif %}
+            {% if product.bullet_points %}
+                <ul>
+                    {% for bullet in product.bullet_points %}
+                        <li>{{ bullet }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+            <a href="{{ product.url }}">链接</a>
+            <button class="button show-chart" data-asin="{{ product.asin }}">显示价格走势图</button>
+            <div id="chart-{{ product.asin }}" class="chart-container" style="display:none;"></div>
+
+            <!-- 新增月销量估计按钮 -->
+            <button class="button estimate-sales" data-category="{{ product.category }}" data-rank="{{ product.rank }}">估计月销量</button>
+        </div>
+    {% endfor %}
+
+    <a href="/" class="button">返回首页</a>
+    <a href="/download_excel" class="button">下载 Excel</a>
+
+    <script>
+        document.querySelectorAll('.show-chart').forEach(button => {
+            button.addEventListener('click', function() {
+                var asin = this.getAttribute('data-asin');
+                var region = "{{ region }}";
+                if (asin) {
+                    var chartDiv = document.getElementById(`chart-${asin}`);
+                    if (!chartDiv.innerHTML.trim()) {
+                        var chartUrl = `https://charts.camelcamelcamel.com/${region}/${asin}/new.png?force=1&zero=0&w=1166&h=601&desired=false&legend=1&ilt=1&tp=all&fo=0&lang=it_IT`;
+                        chartDiv.innerHTML = `<img src="${chartUrl}" alt="Price Trend Chart" style="max-width:800px; width:100%; height:auto;">`;
+                    }
+                    chartDiv.style.display = chartDiv.style.display === 'none' ? 'block' : 'none';
+                } else {
+                    console.error('ASIN is missing for the button:', this);
+                }
+            });
+        });
+
+        document.querySelectorAll('.estimate-sales').forEach(button => {
+            button.addEventListener('click', function() {
+                var category = this.getAttribute('data-category');
+                var rank = this.getAttribute('data-rank');
+                if (category && rank) {
+                    // 这里可以调用后端API来估计月销量，或者执行其他操作
+                    fetch(`/estimate-sales?category=${encodeURIComponent(category)}&rank=${encodeURIComponent(rank)}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log('月销量估计结果:', data);
+                            // 在这里更新页面上的某个元素来显示估计结果
+                            // 例如：alert(`估计的月销量: ${data.sales}`);
+                        })
+                        .catch(error => console.error('请求月销量估计时出错:', error));
+                } else {
+                    console.error('分类或排名信息缺失:', this);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

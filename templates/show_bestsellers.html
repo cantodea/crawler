@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Amazon Best Sellers 产品</title>
+    <style>
+        .button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+        .button:hover {
+            background-color: #45a049;
+        }
+        .product {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .product img {
+            max-width: 100px;
+            max-height: 100px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Amazon Best Sellers 产品</h1>
+
+    {% for product in products %}
+    <div class="product">
+        <img src="{{ product.image }}" alt="{{ product.title }}">
+        <h2>{{ product.title }}</h2>
+        <p>排名: {{ product.rank }}</p>
+        <p>评分: {{ product.rating }}</p>
+        <p>评论数: {{ product.reviews }}</p>
+        <p>价格: {{ product.price }}</p>
+        <!-- 显示ASIN -->
+        <p>ASIN: {{ product.asin }}</p>
+        <a href="{{ product.link }}" target="_blank">在亚马逊上查看</a>
+    </div>
+    {% endfor %}
+
+    <!-- 返回 Best Sellers 分类页面的按钮 -->
+    <a href="/bestsellers" class="button">返回分类</a>
+    <!-- 返回首页的按钮 -->
+    <a href="/" class="button">返回首页</a>
+</body>
+</html>

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>亚马逊 Best Sellers 目录</title>
+    <style>
+        .category, .subcategory {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        .subcategory-list, .product-list {
+            margin-top: 10px;
+            margin-left: 20px;
+        }
+        button {
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>亚马逊 Best Sellers 目录</h1>
+
+    <div id="categories">
+        {% for category in categories %}
+        <div class="category">
+            <a href="javascript:void(0)" onclick="loadSubcategories('{{ category.url }}', this)">{{ category.name }}</a>
+            <button onclick="loadProducts('{{ category.url }}', this)">加载产品</button>
+            <div class="subcategory-list" style="display: none;"></div>
+            <div class="product-list" style="display: none;"></div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <a href="/">返回首页</a>
+
+    <script>
+        function loadSubcategories(url, element) {
+            const subcategoryDiv = element.parentNode.querySelector(".subcategory-list");
+
+            if (subcategoryDiv.hasChildNodes()) {
+                subcategoryDiv.style.display = subcategoryDiv.style.display === 'none' ? 'block' : 'none';
+                return;
+            }
+
+            fetch('/get_subcategories?url=' + encodeURIComponent(url))
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(subcategory => {
+                        const subcategoryContainer = document.createElement('div');
+                        subcategoryContainer.className = 'subcategory';
+
+                        const subcategoryLink = document.createElement('a');
+                        subcategoryLink.href = "javascript:void(0)";
+                        subcategoryLink.textContent = subcategory.name;
+                        subcategoryLink.onclick = () => loadSubcategories(subcategory.url, subcategoryLink);
+
+                        const subcategoryProductsButton = document.createElement('button');
+                        subcategoryProductsButton.textContent = '加载产品';
+                        subcategoryProductsButton.onclick = () => loadProducts(subcategory.url, subcategoryProductsButton);
+
+                        const newSubcategoryDiv = document.createElement('div');
+                        newSubcategoryDiv.className = 'subcategory-list';
+                        newSubcategoryDiv.style.display = 'none';
+
+                        const subcategoryProductsDiv = document.createElement('div');
+                        subcategoryProductsDiv.className = 'product-list';
+                        subcategoryProductsDiv.style.display = 'none';
+
+                        subcategoryContainer.appendChild(subcategoryLink);
+                        subcategoryContainer.appendChild(subcategoryProductsButton);
+                        subcategoryContainer.appendChild(newSubcategoryDiv);
+                        subcategoryContainer.appendChild(subcategoryProductsDiv);
+                        subcategoryDiv.appendChild(subcategoryContainer);
+                    });
+
+                    subcategoryDiv.style.display = 'block';
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        function loadProducts(url, element) {
+    window.location.href = '/show_bestsellers?url=' + encodeURIComponent(url);
+}
+    </script>
+</body>
+</html>

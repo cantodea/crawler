@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>关键词搜索结果</title>
+    <style>
+        .button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+        .button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>关键词搜索结果</h1>
+
+    <form method="post" action="/process_selected_asins">
+        {% for product in products %}
+            <div>
+                <h2>{{ product.title }}</h2>
+                <p>价格: {{ product.price }}</p>
+                <p>评分: {{ product.rating }}</p>
+                <!-- 添加显示ASIN的段落 -->
+                <p>ASIN: {{ product.asin }}</p>
+                <a href="{{ product.url }}">链接</a>
+                <input type="checkbox" name="selected_asins" value="{{ product.asin }}"> 选择
+            </div>
+        {% endfor %}
+
+        <!-- 提交选中的ASIN进行详细查询的按钮 -->
+        <input type="submit" value="查询选中产品" class="button">
+    </form>
+
+    <!-- 返回首页的按钮 -->
+    <a href="/" class="button">返回首页</a>
+    <!-- 下载 Excel 的按钮 -->
+    <a href="/download_excel" class="button">下载 Excel</a>
+</body>
+</html>
